@@ -4,6 +4,7 @@ import minimist from "minimist";
 import { check } from "./index";
 
 const {
+  _: targets,
   workspace,
   srcDir,
   onlyTemplate,
@@ -19,6 +20,7 @@ const cwd = process.cwd();
 
 check({
   workspace: path.resolve(cwd, workspace),
+  targets: targets.map((t) => path.resolve(cwd, t)),
   srcDir: srcDir && path.resolve(cwd, srcDir),
   onlyTemplate,
   onlyTypeScript,

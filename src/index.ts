@@ -19,10 +19,11 @@ import { globSync, readFile, extractTargetFileExtension } from "./file-util";
 
 interface Options {
   workspace: string;
+  targets?: string[];
   srcDir?: string;
   onlyTemplate?: boolean;
   onlyTypeScript?: boolean;
-  excludeDir?: string|string[];
+  excludeDir?: string | string[];
 }
 
 interface Source {
@@ -34,13 +35,19 @@ interface Source {
 let validLanguages = ["vue"];
 
 export async function check(options: Options) {
-  const { workspace, onlyTemplate = false, onlyTypeScript = false, excludeDir } = options;
+  const {
+    workspace,
+    onlyTemplate = false,
+    onlyTypeScript = false,
+    targets = [],
+    excludeDir,
+  } = options;
   if (onlyTypeScript) {
     validLanguages = ["ts", "tsx", "vue"];
   }
   const srcDir = options.srcDir || options.workspace;
   const excludeDirs = typeof excludeDir === "string" ? [excludeDir] : excludeDir;
-  const docs = await traverse(srcDir, onlyTypeScript, excludeDirs);
+  const docs = await traverse(srcDir, onlyTypeScript, targets, excludeDirs);
 
   await getDiagnostics({ docs, workspace, onlyTemplate });
 }
@@ -48,14 +55,18 @@ export async function check(options: Options) {
 async function traverse(
   root: string,
   onlyTypeScript: boolean,
+  targets: string[],
   excludeDirs?: string[]
 ): Promise<TextDocument[]> {
-  let targetFiles = globSync(
-    path.join(
-      root,
-      onlyTypeScript ? `**/*.{${validLanguages.join(",")}}` : "**/*.vue"
-    )
-  );
+  let targetFiles =
+    targets.length > 0
+      ? globSync(targets)
+      : globSync(
+          path.join(
+            root,
+            onlyTypeScript ? `**/*.{${validLanguages.join(",")}}` : "**/*.vue"
+          )
+        );
 
   if (excludeDirs) {
     const filterTargets = excludeDirs.map((dir) => path.resolve(dir)).join("|");
