@@ -49,6 +49,7 @@
     "typescript": "^3.9.6"
   },
   "devDependencies": {
+    "dependency-cruiser": "^9.21.0",
     "typescript": "^3.9.6",
     "vue": "^2.6.10"
   }
