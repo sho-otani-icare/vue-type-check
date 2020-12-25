@@ -22,7 +22,7 @@ export function collectDependencies(
     const files = (cruiseResult.output as ICruiseResult).modules.map(
       (result) => result.source
     );
-    return files;
+    return [...entries, ...files];
   } catch (error) {
     throw error;
   }

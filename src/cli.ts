@@ -26,5 +26,5 @@ check({
   onlyTemplate,
   onlyTypeScript,
   excludeDir,
-  configPath: path.resolve(cwd, configPath),
+  configPath: configPath ? path.resolve(cwd, configPath) : undefined,
 });
