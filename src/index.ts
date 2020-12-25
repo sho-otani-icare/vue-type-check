@@ -16,6 +16,7 @@ import {
   printLog,
 } from "./print";
 import { globSync, readFile, extractTargetFileExtension } from "./file-util";
+import { collectDependencies } from "./dep-graph";
 
 interface Options {
   workspace: string;
@@ -24,6 +25,7 @@ interface Options {
   onlyTemplate?: boolean;
   onlyTypeScript?: boolean;
   excludeDir?: string | string[];
+  configPath?: string;
 }
 
 interface Source {
@@ -41,13 +43,21 @@ export async function check(options: Options) {
     onlyTypeScript = false,
     targets = [],
     excludeDir,
+    configPath,
   } = options;
   if (onlyTypeScript) {
     validLanguages = ["ts", "tsx", "vue"];
   }
   const srcDir = options.srcDir || options.workspace;
-  const excludeDirs = typeof excludeDir === "string" ? [excludeDir] : excludeDir;
-  const docs = await traverse(srcDir, onlyTypeScript, targets, excludeDirs);
+  const excludeDirs =
+    typeof excludeDir === "string" ? [excludeDir] : excludeDir;
+  const docs = await traverse(
+    srcDir,
+    onlyTypeScript,
+    targets,
+    excludeDirs,
+    configPath
+  );
 
   await getDiagnostics({ docs, workspace, onlyTemplate });
 }
@@ -56,11 +66,16 @@ async function traverse(
   root: string,
   onlyTypeScript: boolean,
   targets: string[],
-  excludeDirs?: string[]
+  excludeDirs?: string[],
+  configPath?: string
 ): Promise<TextDocument[]> {
   let targetFiles =
     targets.length > 0
-      ? globSync(targets)
+      ? globSync(
+          collectDependencies(targets, configPath).map((t) =>
+            path.resolve(process.cwd(), t)
+          )
+        )
       : globSync(
           path.join(
             root,
@@ -70,8 +85,8 @@ async function traverse(
 
   if (excludeDirs) {
     const filterTargets = excludeDirs.map((dir) => path.resolve(dir)).join("|");
-    targetFiles = targetFiles.filter((targetFile) =>
-      !new RegExp(`^(?:${filterTargets}).*$`).test(targetFile)
+    targetFiles = targetFiles.filter(
+      (targetFile) => !new RegExp(`^(?:${filterTargets}).*$`).test(targetFile)
     );
   }
 

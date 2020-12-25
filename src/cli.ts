@@ -10,6 +10,7 @@ const {
   onlyTemplate,
   onlyTypeScript,
   excludeDir,
+  configPath,
 } = minimist(process.argv.slice(2));
 
 if (!workspace) {
@@ -25,4 +26,5 @@ check({
   onlyTemplate,
   onlyTypeScript,
   excludeDir,
+  configPath: path.resolve(cwd, configPath),
 });
