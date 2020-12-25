@@ -72,7 +72,7 @@ async function traverse(
   let targetFiles =
     targets.length > 0
       ? globSync(
-          collectDependencies(targets, configPath).map((t) =>
+          collectDependencies(targets, root, configPath).map((t) =>
             path.resolve(process.cwd(), t)
           )
         )
