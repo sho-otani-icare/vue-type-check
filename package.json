@@ -39,6 +39,7 @@
     "@types/prettier": "^2.0.2",
     "@types/progress": "^2.0.3",
     "chalk": "^4.1.0",
+    "dependency-cruiser": "^9.21.0",
     "glob": "^7.1.6",
     "minimist": "^1.2.5",
     "progress": "^2.0.3",
@@ -49,7 +50,6 @@
     "typescript": "^3.9.6"
   },
   "devDependencies": {
-    "dependency-cruiser": "^9.21.0",
     "typescript": "^3.9.6",
     "vue": "^2.6.10"
   }
