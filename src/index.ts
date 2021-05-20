@@ -72,8 +72,12 @@ async function traverse(
   let targetFiles =
     targets.length > 0
       ? globSync(
-          collectDependencies(targets, root, configPath).map((t) =>
+          collectDependencies(targets, root, configPath)
+          .map((t) =>
             path.resolve(process.cwd(), t)
+          )
+          .filter((t) =>
+            validLanguages.map((e) => `.${e}`).includes(t)
           )
         )
       : globSync(
